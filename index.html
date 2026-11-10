@@ -5,7 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>FloatSkyward | Mobile App Games & Digital Goodies</title>
 <meta name="description" content="FloatSkyward makes mobile games and digital extras. Soundtracks, art packs, guides and more." />
-<link rel="icon" href="logo.png" />
+<link rel="canonical" href="https://floatskyward.com/" />
+<link rel="icon" type="image/png" href="logo-icon.png" />
+<link rel="apple-touch-icon" href="logo-icon.png" />
+<meta name="theme-color" content="#8fd3f4" />
+<meta name="author" content="FloatSkyward" />
+<!-- Open Graph / social share -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="FloatSkyward" />
+<meta property="og:title" content="FloatSkyward — Games that lift the spirit." />
+<meta property="og:description" content="Hand-drawn mobile games and digital goodies: soundtracks, wallpaper packs, guides and more. Made by one developer with a lot of heart." />
+<meta property="og:url" content="https://floatskyward.com/" />
+<meta property="og:image" content="https://floatskyward.com/og-image.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="FloatSkyward — a smiling cloud and red balloon, with hand-drawn wallpaper previews." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="FloatSkyward — Games that lift the spirit." />
+<meta name="twitter:description" content="Hand-drawn mobile games and digital goodies, made by one developer with a lot of heart." />
+<meta name="twitter:image" content="https://floatskyward.com/og-image.jpg" />
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Nunito:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
 <style>
   :root {
@@ -87,7 +105,7 @@
     backdrop-filter: blur(10px);
     border-bottom: 2px dashed rgba(74,42,26,.2);
   }
-  header img { height: 52px; }
+  header img { height: 50px; width: 50px; object-fit: cover; border-radius: 12px; }
   nav a {
     margin-left: 18px; color: var(--ink); text-decoration: none; font-weight: 700;
     position: relative;
@@ -173,9 +191,13 @@
     font-size: 5rem; overflow: hidden;
   }
   .card .art-emoji {
-    display: inline-block;
+    display: inline-block; position: relative; z-index: 1;
     animation: bob 4.5s ease-in-out infinite;
     filter: drop-shadow(0 6px 10px rgba(74,42,26,.22));
+  }
+  .card .art::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,.4), transparent 62%);
   }
   .card .art::after {
     content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -294,7 +316,10 @@
     position: relative; z-index: 1;
   }
   footer a { color: var(--sky); }
-  footer img { height: 70px; margin-bottom: 14px; opacity: .95; }
+  footer img {
+    height: 92px; width: 92px; object-fit: cover; margin-bottom: 16px;
+    border-radius: 20px; background: var(--paper); padding: 6px; box-shadow: var(--shadow);
+  }
 
   /* ---------- SHOP GALLERY CARD ---------- */
   .art-gallery { cursor: pointer; padding: 0; }
@@ -402,13 +427,13 @@
   <div class="cloud-puff" style="width:160px;height:50px;top:18%;"></div>
   <div class="cloud-puff" style="width:220px;height:60px;top:70%;animation-duration:22s;animation-delay:-8s;"></div>
   <div class="cloud-puff" style="width:120px;height:40px;top:40%;animation-duration:16s;animation-delay:-4s;"></div>
-  <img class="intro-logo" src="logo.png" alt="FloatSkyward logo" />
+  <img class="intro-logo" src="logo.jpg" alt="FloatSkyward logo" />
   <p class="intro-tag">keep the fun airborne</p>
   <button class="skip" id="skipBtn">Skip intro</button>
 </div>
 
 <header>
-  <img src="logo.png" alt="FloatSkyward" />
+  <img src="logo-icon.png" alt="FloatSkyward" />
   <nav>
     <a href="#shop">Shop</a>
     <a href="#about">About</a>
@@ -488,7 +513,7 @@
 </div>
 
 <footer>
-  <img src="logo.png" alt="FloatSkyward" />
+  <img src="logo-icon.png" alt="FloatSkyward" />
   <p>© <span id="year"></span> FloatSkyward. All rights reserved.</p>
   <p style="margin-top:8px;font-size:.85rem;opacity:.8;">Digital downloads are delivered by email after purchase. Apps are available on Google Play.</p>
 </footer>
@@ -505,7 +530,8 @@
       desc: "Every track from the maze game, in MP3 and FLAC. Headphones recommended, getting lost optional.",
       price: "$4.99",
       badge: "Bestseller",
-      buyUrl: ""
+      buyUrl: "",
+      tint: ["#b9c4ff", "#e7ddff"]
     },
     {
       emoji: "🎨",
@@ -534,7 +560,8 @@
       desc: "Timing tips, Expert unlock routes, and mood-matching tricks. A PDF that actually makes you better.",
       price: "$3.49",
       badge: "PDF",
-      buyUrl: ""
+      buyUrl: "",
+      tint: ["#ffe0a3", "#ffc9b0"]
     }
   ];
 
@@ -564,8 +591,9 @@
           ${buyBtn}
         </div>`;
     } else {
+      const tint = p.tint ? ` style="background:linear-gradient(160deg, ${p.tint[0]} 0%, ${p.tint[1]} 100%)"` : "";
       el.innerHTML = `
-        <div class="art"><span class="badge">${p.badge}</span><span class="art-emoji">${p.emoji}</span></div>
+        <div class="art"${tint}><span class="badge">${p.badge}</span><span class="art-emoji">${p.emoji}</span></div>
         <div class="body">
           <h3>${p.title}</h3>
           <p>${p.desc}</p>
