@@ -19,6 +19,8 @@
     --shadow: 0 10px 30px rgba(74, 42, 26, .18);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  ::selection { background: rgba(143,211,244,.6); color: var(--ink); }
+  :focus-visible { outline: 3px solid var(--sky-deep); outline-offset: 3px; border-radius: 6px; }
   html, body { height: 100%; }
   html { scroll-behavior: smooth; }
   body {
@@ -50,11 +52,21 @@
     animation: rise 2.2s cubic-bezier(.2,.8,.2,1) both, bob 4s ease-in-out 2.2s infinite;
     filter: drop-shadow(var(--shadow));
   }
+  .intro-tag {
+    margin-top: 14px;
+    font-family: "Caveat", cursive;
+    font-size: clamp(1.4rem, 4.2vw, 2.1rem);
+    color: var(--ink);
+    opacity: 0;
+    animation: tagfade 1.1s ease 1.3s both;
+  }
+  @keyframes tagfade { from { opacity: 0; transform: translateY(10px); } to { opacity: .82; transform: none; } }
   .cloud-puff {
     position: absolute;
-    background: #fff;
+    background: radial-gradient(ellipse at center, #fff 0%, #fff 55%, rgba(255,255,255,0) 73%);
     border-radius: 999px;
-    opacity: .7;
+    opacity: .9;
+    filter: blur(1px);
     animation: drift linear infinite;
   }
   @keyframes rise { from { transform: translateY(60px) scale(.85); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -127,10 +139,14 @@
     width: 44px; height: 54px; animation-delay: -3s;
     background: radial-gradient(circle at 30% 30%, #ff9aa6, #e0283f 60%);
   }
+  .float-balloon.tiny {
+    width: 30px; height: 38px; animation-delay: -5s; opacity: .5; filter: blur(1px);
+    background: radial-gradient(circle at 30% 30%, #ffb3bc, #c81f33 60%);
+  }
   @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-26px); } }
 
   /* ---------- SECTIONS ---------- */
-  section { position: relative; z-index: 1; padding: 70px 6vw; }
+  section { position: relative; z-index: 1; padding: 70px 6vw; scroll-margin-top: 84px; }
   .section-title {
     text-align: center; font-family: "Caveat", cursive; font-size: clamp(2.4rem, 6vw, 3.6rem);
     margin-bottom: 36px; color: var(--ink);
@@ -154,8 +170,19 @@
   .card .art {
     height: 200px; display: grid; place-items: center; position: relative;
     background: linear-gradient(160deg, var(--sky) 0%, #d6f1ff 100%);
-    font-size: 5rem;
+    font-size: 5rem; overflow: hidden;
   }
+  .card .art-emoji {
+    display: inline-block;
+    animation: bob 4.5s ease-in-out infinite;
+    filter: drop-shadow(0 6px 10px rgba(74,42,26,.22));
+  }
+  .card .art::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(115deg, transparent 32%, rgba(255,255,255,.55) 50%, transparent 68%);
+    transform: translateX(-130%); transition: transform .75s ease;
+  }
+  .card:hover .art::after { transform: translateX(130%); }
   .card .badge {
     position: absolute; top: 14px; left: 14px; background: var(--balloon); color: #fff;
     font-weight: 900; font-size: .75rem; padding: 5px 10px; border-radius: 999px; letter-spacing: .5px;
@@ -269,6 +296,89 @@
   footer a { color: var(--sky); }
   footer img { height: 70px; margin-bottom: 14px; opacity: .95; }
 
+  /* ---------- SHOP GALLERY CARD ---------- */
+  .art-gallery { cursor: pointer; padding: 0; }
+  .art-gallery .badge, .art-gallery .preview-pill { z-index: 2; }
+  .art-gallery .thumb-strip {
+    position: absolute; inset: 0; display: grid; z-index: 1;
+    grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px;
+  }
+  .art-gallery .thumb {
+    background-size: cover; background-position: center;
+    transition: transform .5s ease;
+  }
+  .art-gallery:hover .thumb { transform: scale(1.06); }
+  .art-gallery .preview-pill {
+    position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%);
+    background: rgba(74,42,26,.86); color: #fff; font-weight: 900; font-size: .82rem;
+    padding: 8px 16px; border-radius: 999px; backdrop-filter: blur(4px);
+    box-shadow: var(--shadow); transition: transform .2s, background .2s; white-space: nowrap;
+  }
+  .art-gallery:hover .preview-pill { transform: translateX(-50%) translateY(-3px); background: var(--balloon); }
+
+  /* ---------- LIGHTBOX ---------- */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(32,20,12,.82); backdrop-filter: blur(6px);
+    display: none; padding: 24px;
+  }
+  .lightbox.open { display: grid; place-items: center; animation: lb-fade .3s ease both; }
+  @keyframes lb-fade { from { opacity: 0; } to { opacity: 1; } }
+  .lb-inner {
+    width: min(960px, 100%); max-height: 92vh; background: var(--paper);
+    border-radius: 22px; box-shadow: var(--shadow); padding: 18px;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .lb-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 12px; }
+  .lb-caption { font-weight: 900; color: var(--ink); font-size: .95rem; }
+  .lb-btn {
+    border: none; cursor: pointer; font-weight: 900; color: var(--ink);
+    background: #fff; box-shadow: var(--shadow); border-radius: 999px;
+    display: grid; place-items: center;
+  }
+  .lb-close { width: 38px; height: 38px; font-size: 1rem; flex: none; }
+  .lb-close:hover { background: var(--balloon); color: #fff; }
+  .lb-grid {
+    display: none; gap: 12px; overflow-y: auto; padding: 4px;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  .lb-grid.show { display: grid; }
+  .lb-thumb {
+    aspect-ratio: 9 / 16; border: none; border-radius: 14px; cursor: pointer;
+    background-size: cover; background-position: center; box-shadow: var(--shadow);
+    transition: transform .25s ease;
+  }
+  .lb-thumb:hover { transform: translateY(-4px) scale(1.02); }
+  .lb-stage {
+    display: none; align-items: center; justify-content: center;
+    position: relative; flex: 1; min-height: 0;
+  }
+  .lb-stage.show { display: flex; }
+  .lb-img {
+    max-height: 72vh; max-width: 100%; border-radius: 16px;
+    box-shadow: var(--shadow); border: 5px solid #fff;
+    animation: lb-pop .3s ease both;
+  }
+  @keyframes lb-pop { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+  .lb-nav {
+    width: 46px; height: 46px; font-size: 1.8rem; flex: none; line-height: 1;
+    position: absolute; top: 50%; transform: translateY(-50%);
+  }
+  .lb-nav:hover { background: var(--balloon); color: #fff; }
+  .lb-prev { left: 6px; }
+  .lb-next { right: 6px; }
+  .lb-back {
+    display: none; margin: 14px auto 2px; background: none; border: 2px solid var(--ink);
+    color: var(--ink); padding: 8px 18px; border-radius: 999px;
+    font: 700 14px "Nunito", sans-serif; cursor: pointer;
+  }
+  .lb-back:hover { background: var(--ink); color: var(--paper); }
+  #lbStage.show ~ .lb-back { display: block; }
+  @media (max-width: 520px) {
+    .lb-nav { width: 40px; height: 40px; font-size: 1.5rem; }
+    .lb-grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
+  }
+
   /* ---------- REVEAL ---------- */
   .fade-up { opacity: 0; transform: translateY(24px); transition: all .8s ease; }
   .fade-up.in { opacity: 1; transform: none; }
@@ -293,6 +403,7 @@
   <div class="cloud-puff" style="width:220px;height:60px;top:70%;animation-duration:22s;animation-delay:-8s;"></div>
   <div class="cloud-puff" style="width:120px;height:40px;top:40%;animation-duration:16s;animation-delay:-4s;"></div>
   <img class="intro-logo" src="logo.png" alt="FloatSkyward logo" />
+  <p class="intro-tag">keep the fun airborne</p>
   <button class="skip" id="skipBtn">Skip intro</button>
 </div>
 
@@ -307,8 +418,10 @@
 </header>
 
 <div class="hero">
-  <div class="float-balloon" style="left:8%;top:20%;"></div>
-  <div class="float-balloon small" style="right:10%;top:35%;"></div>
+  <div class="float-balloon" style="left:8%;top:20%;" data-depth="1.4"></div>
+  <div class="float-balloon small" style="right:10%;top:35%;" data-depth="1"></div>
+  <div class="float-balloon small" style="right:22%;top:12%;animation-delay:-1.5s;" data-depth="1.8"></div>
+  <div class="float-balloon tiny" style="left:20%;top:62%;" data-depth="2.4"></div>
   <h1>Games that lift the spirit.</h1>
   <p>FloatSkyward builds mobile games and digital extras with a lot of heart and a little chaos. Grab a soundtrack, an art pack, or a guide, and keep the fun airborne.</p>
   <a class="cta" href="#shop">Browse the Goodies</a>
@@ -357,6 +470,23 @@
   </div>
 </section>
 
+<!-- LIGHTBOX GALLERY -->
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Cloud Friends wallpaper preview">
+  <div class="lb-inner">
+    <div class="lb-top">
+      <span id="lbCaption" class="lb-caption"></span>
+      <button id="lbClose" class="lb-btn lb-close" aria-label="Close preview">✕</button>
+    </div>
+    <div id="lbGrid" class="lb-grid"></div>
+    <div id="lbStage" class="lb-stage">
+      <button id="lbPrev" class="lb-btn lb-nav lb-prev" aria-label="Previous wallpaper">‹</button>
+      <img id="lbImg" class="lb-img" alt="" />
+      <button id="lbNext" class="lb-btn lb-nav lb-next" aria-label="Next wallpaper">›</button>
+    </div>
+    <button id="lbBackToGrid" class="lb-back">← Back to all</button>
+  </div>
+</div>
+
 <footer>
   <img src="logo.png" alt="FloatSkyward" />
   <p>© <span id="year"></span> FloatSkyward. All rights reserved.</p>
@@ -365,8 +495,9 @@
 
 <script>
   /* ============ EDIT YOUR PRODUCTS HERE ============
-     buyUrl = your Stripe Payment Link or Gumroad/Lemon Squeezy link.
-     Leave it as "" and the button shows "Coming Soon" until you add it. */
+     buyUrl = your Gumroad / Lemon Squeezy / Stripe Payment Link.
+     Leave it as "" and the button shows "Coming Soon" until you add it.
+     images = optional on-site preview gallery (used by the wallpaper pack). */
   const PRODUCTS = [
     {
       emoji: "🎵",
@@ -379,10 +510,23 @@
     {
       emoji: "🎨",
       title: "Cloud Friends Wallpaper Pack",
-      desc: "12 hand-drawn phone wallpapers in the FloatSkyward style. Light and dark versions included.",
+      desc: "11 hand-drawn phone wallpapers in the FloatSkyward style — happy skies, sleepy moons, moody storms, and one little cloud floating up on a red balloon. Light and dark versions included.",
       price: "$2.99",
       badge: "New",
-      buyUrl: ""
+      buyUrl: "",
+      images: [
+        { src: "wallpapers/float-up.jpg",        label: "Float Up" },
+        { src: "wallpapers/happy-cloud.jpg",     label: "Happy Little Cloud" },
+        { src: "wallpapers/cloud-buddies.jpg",   label: "Cloud Buddies" },
+        { src: "wallpapers/rainbow-friends.jpg", label: "Rainbow Friends" },
+        { src: "wallpapers/cloud-love.jpg",      label: "Cloud Love" },
+        { src: "wallpapers/sweet-sky.jpg",       label: "Sweet Sky" },
+        { src: "wallpapers/goodnight-moon.jpg",  label: "Goodnight Moon" },
+        { src: "wallpapers/night-wink.jpg",      label: "Night Wink" },
+        { src: "wallpapers/brave-cloud.jpg",     label: "Brave Little Cloud" },
+        { src: "wallpapers/moody-trio.jpg",      label: "Moody Trio" },
+        { src: "wallpapers/pencil-cloud.jpg",    label: "Pencil Cloud" }
+      ]
     },
     {
       emoji: "🧭",
@@ -400,18 +544,102 @@
     el.className = "card";
     el.style.transitionDelay = `${i * 120}ms`;
     const hasLink = p.buyUrl && p.buyUrl.trim() !== "";
-    el.innerHTML = `
-      <div class="art"><span class="badge">${p.badge}</span>${p.emoji}</div>
-      <div class="body">
-        <h3>${p.title}</h3>
-        <p>${p.desc}</p>
-        <div class="price">${p.price}</div>
-        ${hasLink
-          ? `<a class="buy" href="${p.buyUrl}" target="_blank" rel="noopener">Buy Now</a>`
-          : `<span class="buy disabled">Coming Soon</span>`}
-      </div>`;
+    const buyBtn = hasLink
+      ? `<a class="buy" href="${p.buyUrl}" target="_blank" rel="noopener">Buy Now</a>`
+      : `<span class="buy disabled">Coming Soon</span>`;
+
+    if (p.images && p.images.length) {
+      const strip = p.images.slice(0, 4).map(im =>
+        `<span class="thumb" style="background-image:url('${im.src}')"></span>`).join("");
+      el.innerHTML = `
+        <div class="art art-gallery" data-gallery="1" role="button" tabindex="0" aria-label="Preview the ${p.title}">
+          <span class="badge">${p.badge}</span>
+          <div class="thumb-strip">${strip}</div>
+          <span class="preview-pill">👀 Preview all ${p.images.length}</span>
+        </div>
+        <div class="body">
+          <h3>${p.title}</h3>
+          <p>${p.desc}</p>
+          <div class="price">${p.price}</div>
+          ${buyBtn}
+        </div>`;
+    } else {
+      el.innerHTML = `
+        <div class="art"><span class="badge">${p.badge}</span><span class="art-emoji">${p.emoji}</span></div>
+        <div class="body">
+          <h3>${p.title}</h3>
+          <p>${p.desc}</p>
+          <div class="price">${p.price}</div>
+          ${buyBtn}
+        </div>`;
+    }
     grid.appendChild(el);
   });
+
+  /* ---------- Lightbox gallery ---------- */
+  const galleryImages = (PRODUCTS.find(p => p.images) || {}).images || [];
+  const lb = document.getElementById("lightbox");
+  const lbStage = document.getElementById("lbStage");
+  const lbImg = document.getElementById("lbImg");
+  const lbCaption = document.getElementById("lbCaption");
+  const lbGrid = document.getElementById("lbGrid");
+  let lbIndex = 0, lbMode = "grid";
+
+  galleryImages.forEach((im, idx) => {
+    const t = document.createElement("button");
+    t.className = "lb-thumb";
+    t.style.backgroundImage = `url('${im.src}')`;
+    t.setAttribute("aria-label", im.label);
+    t.addEventListener("click", () => showSingle(idx));
+    lbGrid.appendChild(t);
+  });
+
+  const openLightbox = () => { lb.classList.add("open"); document.body.style.overflow = "hidden"; setGridMode(); };
+  const closeLightbox = () => { lb.classList.remove("open"); document.body.style.overflow = ""; };
+  function setGridMode() {
+    lbMode = "grid";
+    lbStage.classList.remove("show");
+    lbGrid.classList.add("show");
+    lbCaption.textContent = `Cloud Friends — ${galleryImages.length} wallpapers`;
+  }
+  function showSingle(idx) {
+    lbMode = "single";
+    lbIndex = (idx + galleryImages.length) % galleryImages.length;
+    const im = galleryImages[lbIndex];
+    lbImg.src = im.src; lbImg.alt = im.label;
+    lbCaption.textContent = `${im.label}  ·  ${lbIndex + 1} / ${galleryImages.length}`;
+    lbGrid.classList.remove("show");
+    lbStage.classList.add("show");
+  }
+  const next = () => showSingle(lbIndex + 1);
+  const prev = () => showSingle(lbIndex - 1);
+
+  document.querySelectorAll("[data-gallery]").forEach(a => {
+    a.addEventListener("click", openLightbox);
+    a.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightbox(); }
+    });
+  });
+  document.getElementById("lbClose").addEventListener("click", closeLightbox);
+  document.getElementById("lbNext").addEventListener("click", next);
+  document.getElementById("lbPrev").addEventListener("click", prev);
+  document.getElementById("lbBackToGrid").addEventListener("click", setGridMode);
+  lb.addEventListener("click", e => { if (e.target === lb) closeLightbox(); });
+  document.addEventListener("keydown", e => {
+    if (!lb.classList.contains("open")) return;
+    if (e.key === "Escape") { lbMode === "single" ? setGridMode() : closeLightbox(); }
+    else if (lbMode === "single" && e.key === "ArrowRight") next();
+    else if (lbMode === "single" && e.key === "ArrowLeft") prev();
+  });
+  // Swipe navigation on the enlarged image
+  let touchX = null;
+  lbStage.addEventListener("touchstart", e => { touchX = e.changedTouches[0].clientX; }, { passive: true });
+  lbStage.addEventListener("touchend", e => {
+    if (touchX === null || lbMode !== "single") return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 40) (dx < 0 ? next() : prev());
+    touchX = null;
+  }, { passive: true });
 
   // Scroll reveals
   const io = new IntersectionObserver(entries => {
@@ -437,8 +665,20 @@
   tributeBtn.addEventListener("click", () => setTribute(!tribute.classList.contains("open")));
   closeTribute.addEventListener("click", () => { setTribute(false); tributeBtn.focus(); });
 
-  document.querySelectorAll(".cloud-puff").forEach(c => { c.style.left = "0"; });
   document.getElementById("year").textContent = new Date().getFullYear();
+
+  // Gentle mouse parallax on the hero balloons (skipped for reduced-motion)
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const balloons = document.querySelectorAll(".float-balloon");
+    window.addEventListener("mousemove", e => {
+      const cx = e.clientX / window.innerWidth - 0.5;
+      const cy = e.clientY / window.innerHeight - 0.5;
+      balloons.forEach(b => {
+        const d = parseFloat(b.dataset.depth || "1");
+        b.style.translate = `${cx * 16 * d}px ${cy * 12 * d}px`;
+      });
+    });
+  }
 </script>
 </body>
     </html>
